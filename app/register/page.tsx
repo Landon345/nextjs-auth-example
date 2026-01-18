@@ -51,7 +51,7 @@ export default function Register() {
         throw new Error(errorData.error || "Registration failed");
       }
 
-      router.push("/dashboard");
+      router.push("/verify-email");
     } catch (err) {
       if (err instanceof Error) {
         setServerError(err.message);

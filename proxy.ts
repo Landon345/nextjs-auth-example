@@ -28,11 +28,9 @@ export async function proxy(request: NextRequest) {
   // --- 2. CSP & NONCE LOGIC ---
   const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
 
-  // ADD 'unsafe-eval' HERE to fix your blank screen/bcrypt error
-  const isDev = process.env.NODE_ENV === "development";
   const cspHeader = `
     default-src 'self';
-    script-src 'self' 'nonce-${nonce}' 'strict-dynamic' ${isDev ? "'unsafe-eval'" : ""};
+    script-src 'self' 'nonce-${nonce}' 'strict-dynamic';
     style-src 'self' 'unsafe-inline';
     img-src 'self' blob: data:;
     font-src 'self';
