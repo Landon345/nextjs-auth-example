@@ -11,7 +11,7 @@ Follow these steps to get your local development environment running.
 ### 1. Clone and Install
 
 ```bash
-git clone [https://github.com/Landon345/nextjs-auth-example.git](https://github.com/Landon345/nextjs-auth-example.git)
+git clone https://github.com/Landon345/nextjs-auth-example.git
 cd nextjs-auth-example
 pnpm install
 ```
@@ -41,8 +41,8 @@ NODE_ENV="dev"
 Sync the Prisma schema with your local or cloud database and generate the TypeScript client.
 
 ```bash
-pnpm prisma db push
-pnpm prisma generate
+pnpm exec prisma db push
+pnpm exec prisma generate
 ```
 
 ## 🔐 Authentication & OTP Flow
