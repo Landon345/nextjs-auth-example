@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🏥 NextJs Auth Example
 
-## Getting Started
+This example is a themed around a medical records app. It is built with Next.js 15, Prisma, and Resend. It features a robust authentication flow, 6-digit email verification, and a dashboard.
 
-First, run the development server:
+---
+
+## 🚀 Getting Started
+
+Follow these steps to get your local development environment running.
+
+### 1. Clone and Install
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone [https://github.com/Landon345/nextjs-auth-example.git](https://github.com/Landon345/nextjs-auth-example.git)
+cd nextjs-auth-example
+pnpm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. Before Database Sync
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+🔑 Environment Configuration
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Create a `.env` file in the root directory. This file contains sensitive secrets and **must not** be committed to GitHub.
 
-## Learn More
+```env
+# Database Connection (PostgreSQL)
+DATABASE_URL="your_database_connection_string"
 
-To learn more about Next.js, take a look at the following resources:
+# Authentication (Random 32+ character string)
+JWT_SECRET="your_secure_jwt_secret"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# Email Service (Resend.com API Key)
+RESEND_API_KEY="re_your_api_key"
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+# Environment
+NODE_ENV="dev"
+```
 
-## Deploy on Vercel
+### 3. Database Sync
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Sync the Prisma schema with your local or cloud database and generate the TypeScript client.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+pnpm prisma db push
+pnpm prisma generate
+```
+
+## 🔐 Authentication & OTP Flow
+
+StrideSync uses a multi-layered verification system to protect patient data:
+
+- **Registration:** User data is captured; passwords are hashed via `bcryptjs`.
+- **OTP Generation:** A 6-digit code is generated and stored in the DB with a 15-minute expiration.
+- **Email Delivery:** The code is sent via **Resend** to the user's inbox.
+- **Session:** An encrypted JWT is generated using `jose` and stored in a secure **HttpOnly** cookie.
+- **Verification:** The user must enter the code at `/verify-email` to unlock dashboard access.
