@@ -1,11 +1,22 @@
+import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 import Link from "next/link";
-// import { getSession } from "@/lib/auth"; // You'll create this helper
+import { decrypt } from "@/lib/auth";
+import LogoutButton from "@/components/LogoutButton";
 
 export default async function Dashboard() {
-  // 1. Server-side Protection (Logic explained in Step 2)
-  // const session = await getSession();
-  // if (!session) redirect("/login");
+  // 1. Get the session cookie
+  const cookieStore = await cookies();
+  const token = cookieStore.get("auth_token")?.value;
+
+  // 2. Validate and Decrypt
+  if (!token) redirect("/login");
+
+  const session = await decrypt(token);
+  if (!session || !session.user) redirect("/login");
+
+  // Access user data from the session payload
+  const { FirstName, LastName } = session.user;
 
   return (
     <div className="flex min-h-screen bg-zinc-50 dark:bg-black font-sans">
@@ -46,17 +57,31 @@ export default async function Dashboard() {
       <main className="flex-1 p-10">
         <header className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-2xl font-medium tracking-tight text-zinc-900 dark:text-zinc-50">
-              Patient Overview
+            {/* PERSONALIZED WELCOME MESSAGE */}
+            <h1 className="text-2xl font-medium tracking-tight">
+              Welcome back,{" "}
+              <span className="text-zinc-500">
+                {FirstName} {LastName}
+              </span>
             </h1>
             <p className="text-sm text-zinc-500">
-              Welcome back, your health data is synchronized.
+              You have successfully authenticated into your medical portal.
             </p>
           </div>
-          <button className="h-9 px-4 rounded-lg bg-zinc-900 dark:bg-zinc-50 text-white dark:text-black text-sm font-medium">
-            New Record
-          </button>
+          <div className="flex gap-3">
+            <LogoutButton />
+            <button className="h-9 px-4 rounded-lg bg-zinc-900 dark:bg-zinc-50 text-white dark:text-black text-sm font-medium">
+              New Record
+            </button>
+          </div>
         </header>
+
+        {/* Stats Grid and Tables follow... */}
+        <div className="p-8 rounded-xl border border-zinc-200 dark:border-zinc-800 bg-white dark:bg-zinc-950">
+          <p className="text-sm text-zinc-500">
+            Your session is active and encrypted.
+          </p>
+        </div>
 
         {/* Stats Grid */}
         <div className="grid grid-cols-3 gap-6 mb-10">
